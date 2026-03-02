@@ -64,7 +64,7 @@ form.addEventListener("submit", async (event) => {
 
 	let wispUrl =
 		(location.protocol === "https:" ? "wss" : "ws") +
-		"://wisp.rhw.one/wisp/";
+		"://gointospace.app.cdn.cloudflare.net/wisp/";
 
 	if ((await connection.getTransport()) !== "/libcurl/index.mjs") {
 		await connection.setTransport("/libcurl/index.mjs", [
