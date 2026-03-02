@@ -1,5 +1,4 @@
 "use strict";
-
 /**
  * @type {HTMLFormElement}
  */
@@ -21,7 +20,6 @@ const error = document.getElementById("sj-error");
  */
 const errorCode = document.getElementById("sj-error-code");
 
-// Load Scramjet controller
 const { ScramjetController } = $scramjetLoadController();
 
 const scramjet = new ScramjetController({
@@ -32,61 +30,36 @@ const scramjet = new ScramjetController({
 	},
 });
 
-// Initialize Scramjet
 scramjet.init();
 
-// Initialize BareMux with explicit worker
 const connection = new BareMux.BareMuxConnection("/baremux/worker.js");
-
-// Wait for the worker to be ready
-async function ensureWorkerReady() {
-	await connection.ready();
-}
-
-// Optional helper: builds URL based on user input
-function getUrl(addressValue, searchEngineValue) {
-	// Preserve your original search logic
-	return search(addressValue, searchEngineValue);
-}
 
 form.addEventListener("submit", async (event) => {
 	event.preventDefault();
 
-	// Clear previous errors
-	error.textContent = "";
-	errorCode.textContent = "";
-
 	try {
-		// Register service worker
 		await registerSW();
 	} catch (err) {
 		error.textContent = "Failed to register service worker.";
 		errorCode.textContent = err.toString();
-		return; // Stop here if SW fails
+		throw err;
 	}
 
-	// Ensure BareMux worker is ready
-	await ensureWorkerReady();
+	const url = search(address.value, searchEngine.value);
 
-	// Build the URL from input
-	const url = getUrl(address.value, searchEngine.value);
-
-	// Prepare WebSocket transport for libcurl
-	const wispUrl =
+	let wispUrl =
 		(location.protocol === "https:" ? "wss" : "ws") +
-		"://wisp.rhw.one/wisp/";
-
+		"://" +
+		"gointospace.app.cdn.cloudflare.net" +
+		"/wisp/";
 	if ((await connection.getTransport()) !== "/libcurl/index.mjs") {
 		await connection.setTransport("/libcurl/index.mjs", [
 			{ websocket: wispUrl },
 		]);
 	}
-
-	// Create a Scramjet frame and attach it to the page
 	const frame = scramjet.createFrame();
 	frame.frame.id = "sj-frame";
 	document.body.appendChild(frame.frame);
-
-	// Navigate the frame to the target URL
 	frame.go(url);
 });
+index.js ^^^^^
