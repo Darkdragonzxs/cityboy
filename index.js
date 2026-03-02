@@ -50,7 +50,7 @@ form.addEventListener("submit", async (event) => {
 	let wispUrl =
 		(location.protocol === "https:" ? "wss" : "ws") +
 		"://" +
-		location.host +
+		"wisp.rhw.one" +
 		"/wisp/";
 	if ((await connection.getTransport()) !== "/libcurl/index.mjs") {
 		await connection.setTransport("/libcurl/index.mjs", [
